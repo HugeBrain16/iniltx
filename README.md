@@ -15,6 +15,7 @@ token = asdf123
 # main.ltx
 #include config.ini
 
+# define a section that inherits 'config' section
 [main]:config
 name = iniltx
 ```
