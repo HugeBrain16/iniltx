@@ -32,16 +32,17 @@ def _tokenize(string: str | io.StringIO):
     elif isinstance(string, io.StringIO):
         string = string.readlines()
 
-    for line in string:
+    for lineno, line in enumerate(string):
+        lineno += 1
         line = line.strip()
 
         if not line:
             continue
 
         if not _parse_macro(line) and not _parse_inherit(line):
-            result.append(["ini", line])
+            result.append(["ini", line, lineno])
         else:
-            result.append(["ltx", line])
+            result.append(["ltx", line, lineno])
 
     return result
 
@@ -67,13 +68,17 @@ def parse(tokens: list[list[str]]):
                         tokens = _tokenize(open(macro[1]).read())
                         result.update(parse(tokens))
                     else:
-                        raise FileNotFoundError("File not found: " + macro[1])
+                        raise iniparser.ParsingError(
+                            "File not found: " + macro[1], token[2], token[1]
+                        )
 
             inh = _parse_inherit(token[1])
 
             if inh:
                 if not isinstance(result.get(inh[1]), dict):
-                    raise ValueError("Couldn't find section: " + inh[1])
+                    raise iniparser.ParsingError(
+                        "Couldn't find section: " + inh[1], token[2], token[1]
+                    )
 
                 if inherit:
                     result[inherit].update(iniparser.getall(inherit_segment))
@@ -93,12 +98,17 @@ def parse(tokens: list[list[str]]):
                     inherit_segment = ""
                 else:
                     inherit_segment += f"{token[1]}\n"
-                    token[0] = "ltx"
+                    last_type = "ltx"
+                    continue
 
-            segment += f"{token[1]}\n"
+            if token[0] == "ini":
+                segment += f"{token[1]}\n"
         last_type = token[0]
 
     if segment:
         result.update(iniparser.getall(segment))
+
+    if inherit and inherit_segment:
+        result[inherit].update(iniparser.getall(inherit_segment))
 
     return result
