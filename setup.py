@@ -1,10 +1,8 @@
 from setuptools import setup
 
-import iniltx
-
 setup(
     name="iniltx",
-    version=iniltx.__version__,
+    version="1.0.0-dev0",
     description="An INI/LTX config parser",
     py_modules=["iniltx"],
     url="https://github.com/hugebrain16/iniltx",

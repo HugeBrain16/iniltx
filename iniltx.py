@@ -4,8 +4,6 @@ import re
 
 import iniparser
 
-__version__ = "1.0.0-dev0"
-
 _RE_MACRO = re.compile(r"^\#(?P<name>[a-zA-Z_]+)\s+(?P<value>.+)$")
 _RE_INHERIT = re.compile(
     r"^\[(?P<section>[a-zA-Z0-9_-]+)\]\:(?P<instance>[a-zA-Z0-9_-]+)$"
