@@ -109,7 +109,7 @@ def _parse_interps(config: dict):
     for opt in config:
         if isinstance(config[opt], dict):
             for sopt in config[opt]:
-                if config[opt][spot] is not None:
+                if config[opt][sopt] is not None:
                     assign_value(sopt, opt)
         else:
             if config[opt] is not None:
