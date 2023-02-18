@@ -4,18 +4,18 @@ import re
 
 import iniparser
 
-_RE_MACRO = re.compile(r"^\#(?P<name>[a-zA-Z_]+)\s+(?P<value>.+)$")
+_RE_DIRECTIVE = re.compile(r"^\#(?P<name>[a-zA-Z_]+)\s+(?P<value>.+)$")
 _RE_INHERIT = re.compile(
     r"^\[(?P<section>[a-zA-Z0-9_-]+)\]\:(?P<instance>[a-zA-Z0-9_-]+)$"
 )
 _RE_INTERP = re.compile(r"\%([a-zA-Z0-9_:-]+)\%")
 
 
-def _parse_macro(string: str):
-    macro = _RE_MACRO.match(string)
+def _parse_directive(string: str):
+    dirv = _RE_DIRECTIVE.match(string)
 
-    if macro:
-        return macro.groups()
+    if dirv:
+        return dirv.groups()
 
 
 def _parse_inherit(string: str):
@@ -44,7 +44,7 @@ def _tokenize(string: str | io.StringIO):
         if not line:
             continue
 
-        if not _parse_macro(line) and not _parse_inherit(line):
+        if not _parse_directive(line) and not _parse_inherit(line):
             result.append(["ini", line, lineno])
         else:
             result.append(["ltx", line, lineno])
@@ -129,16 +129,16 @@ def parse(tokens: list[list[str]]):
                 result.update(iniparser.getall(segment))
                 segment = ""
 
-            macro = _parse_macro(token[1])
+            dirv = _parse_directive(token[1])
 
-            if macro:
-                if macro[0] == "include":
-                    if os.path.isfile(macro[1]):
-                        tokens = _tokenize(open(macro[1]).read())
+            if dirv:
+                if dirv[0] == "include":
+                    if os.path.isfile(dirv[1]):
+                        tokens = _tokenize(open(dirv[1]).read())
                         result.update(parse(tokens))
                     else:
                         raise iniparser.ParsingError(
-                            "File not found: " + macro[1], token[2], token[1]
+                            "File not found: " + dirv[1], token[2], token[1]
                         )
 
             inh = _parse_inherit(token[1])
