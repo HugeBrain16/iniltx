@@ -15,9 +15,11 @@ token = asdf123
 # main.ltx
 #include config.ini
 
+version = 1.0.0
+
 # define a section that inherits 'config' section
 [main]:config
-name = iniltx
+name = iniltx-v%version%
 ```
 
 ```py
