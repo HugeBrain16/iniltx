@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="iniltx",
-    version="1.0.0-dev2",
+    version="1.0.0-dev3",
     description="An INI/LTX config parser",
     py_modules=["iniltx"],
     url="https://github.com/hugebrain16/iniltx",
