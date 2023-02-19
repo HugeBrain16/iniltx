@@ -6,9 +6,9 @@ import iniparser
 
 _RE_DIRECTIVE = re.compile(r"^\#(?P<name>[a-zA-Z_]+)\s+(?P<value>.+)$")
 _RE_INHERIT = re.compile(
-    r"^\[(?P<section>[a-zA-Z0-9_-]+)\]\:(?P<instance>[a-zA-Z0-9_-]+)$"
+    r"^\[(?P<section>[a-zA-Z0-9_\-]+)\]\:(?P<instance>[a-zA-Z0-9_\-,]+)$"
 )
-_RE_INTERP = re.compile(r"\%([a-zA-Z0-9_:-]+)\%")
+_RE_INTERP = re.compile(r"\%([a-zA-Z0-9_\-:]+)\%")
 
 
 def _parse_directive(string: str):
@@ -144,18 +144,26 @@ def parse(tokens: list[list[str]]):
             inh = _parse_inherit(token[1])
 
             if inh:
-                if not isinstance(result.get(inh[1]), dict):
-                    raise iniparser.ParsingError(
-                        "Couldn't find section: " + inh[1], token[2], token[1]
-                    )
-
                 if inherit:
                     result[inherit].update(iniparser.getall(inherit_segment))
                     inherit_segment = ""
 
+                instances = inh[1].split(",")
                 result[inh[0]] = {}
-                result[inh[0]].update(result[inh[1]])
                 inherit = inh[0]
+
+                for instance in instances:
+                    instance = instance.strip()
+
+                    if not instance:
+                        continue
+
+                    if not isinstance(result.get(instance), dict):
+                        raise iniparser.ParsingError(
+                            "Couldn't find section: " + instance, token[2], token[1]
+                        )
+
+                    result[inherit].update(result[instance])
 
         elif token[0] == "ini":
             if inherit:
