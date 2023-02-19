@@ -63,7 +63,9 @@ def _get_itpsec(string: str):
 
 def _parse_interps(config: dict):
     def assign_value(option: str, section: str = None):
-        for itp in _RE_INTERP.findall(config[section][option] if section else config[option]):
+        for itp in _RE_INTERP.findall(
+            config[section][option] if section else config[option]
+        ):
             tokens = _get_itpsec(itp)
 
             if tokens[1]:
