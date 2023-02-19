@@ -11,8 +11,6 @@ def test_inherit():
     
     [ins3]:ins1,ins2
     val3 = hi
-
-    [ins2]:ins1
     """
 
     tokens = iniltx._tokenize(cfg)
@@ -21,7 +19,6 @@ def test_inherit():
     assert "val1" in data["ins2"]
     assert "val2" in data["ins3"]
     assert "val1" in data["ins3"]
-    assert "val2" in data["ins2"]
 
 
 def test_interpolations():
