@@ -147,7 +147,8 @@ def parse(tokens: list[list[str]]):
                     inherit_segment = ""
 
                 instances = inh[1].split(",")
-                result[inh[0]] = {}
+                if inh[0] not in result:
+                    result[inh[0]] = {}
                 inherit = inh[0]
 
                 for instance in instances:
