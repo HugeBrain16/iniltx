@@ -124,7 +124,7 @@ def parse(tokens: list[list[str]]):
     for token in tokens:
         if token[0] == "ltx":
             if last_type == "ini":
-                result.update(iniparser.getall(segment))
+                result.update(iniparser.read(segment))
                 segment = ""
 
             dirv = _parse_directive(token[1])
@@ -143,7 +143,7 @@ def parse(tokens: list[list[str]]):
 
             if inh:
                 if inherit:
-                    result[inherit].update(iniparser.getall(inherit_segment))
+                    result[inherit].update(iniparser.read(inherit_segment))
                     inherit_segment = ""
 
                 instances = inh[1].split(",")
@@ -168,7 +168,7 @@ def parse(tokens: list[list[str]]):
                 section = iniparser._parse_section(token[1])
 
                 if section:
-                    result[inherit].update(iniparser.getall(inherit_segment))
+                    result[inherit].update(iniparser.read(inherit_segment))
                     inherit = None
                     inherit_segment = ""
                 else:
@@ -181,10 +181,10 @@ def parse(tokens: list[list[str]]):
         last_type = token[0]
 
     if segment:
-        result.update(iniparser.getall(segment))
+        result.update(iniparser.read(segment))
 
     if inherit and inherit_segment:
-        result[inherit].update(iniparser.getall(inherit_segment))
+        result[inherit].update(iniparser.read(inherit_segment))
 
     _parse_interps(result)
     return result
